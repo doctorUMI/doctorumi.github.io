@@ -1,0 +1,460 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML><HEAD>
+  <META NAME="Resource-type" CONTENT="Document">
+  <META NAME="description" CONTENT="Divine Office">
+  <META NAME="keywords" CONTENT="Divine Office, Breviarium, Liturgy, Traditional, Zsolozsma">
+  <META NAME="Copyright" CONTENT="Like GNU">
+  <meta name="color-scheme" content="dark light">
+  <STYLE>
+    /* https://www.30secondsofcode.org/css/s/offscreen/ */
+    .offscreen {
+      border: 0;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+      width: 1px;
+    }
+    h1, h2 {
+      text-align: center;
+      font-weight: normal;
+    }
+    h2 {
+      margin-top: 4ex;
+      color: maroon;
+      font-size: 112%;
+      font-weight: bold;
+      font-style: italic;
+    }
+    p {
+      color: black;
+    }
+    .contrastbg { background: white; }
+    @media (prefers-color-scheme: dark) {
+      table { color: black; }
+      .contrastbg {
+        background: #121212;
+        color: white;
+      }
+    }
+  </STYLE>
+  <TITLE>Sancta Missa</TITLE>
+<SCRIPT TYPE='text/JavaScript' LANGUAGE='JavaScript1.2'>
+
+//position
+function startup() {
+  var i = 1;
+  while (i <= 0) {
+    a = document.getElementById('L' + i);
+    i++;
+    if (a) a.scrollIntoView();
+  }
+}
+
+//prepare position
+function setsearch(ind) {
+  document.forms[0].searchvalue.value = ind;
+  parchange();
+}
+
+//call a setup table
+function pset(p) {
+  document.forms[0].command.value = "setup" + p;
+  document.forms[0].submit();
+}
+
+//call an individual hora
+function hset(p) {
+  if (p.match('Persoluta')) {
+	return okbutton();
+  }
+  if (p.match('Propers')) {
+    p = "1";
+	if (!p) p = 0;
+	p = 1 - p;
+	document.forms[0].Propers.value = p;
+	p = 'Sancta Missa';
+  }
+  clearradio();
+  if ("0") {document.forms[0].caller.value = 1;}
+  document.forms[0].command.value = "pray" + p;
+  document.forms[0].action = "missa.pl";
+  document.forms[0].target = "_self"
+  document.forms[0].submit();
+}
+
+
+//finishing horas back to main page
+function okbutton() {
+  document.forms[0].action = "missa.pl";
+  document.forms[0].target = "_self"
+  document.forms[0].command.value = ' ';
+  document.forms[0].submit();
+}
+
+//to prevent inhearitance of popup
+function clearradio() {
+  var a= document.forms[0].popup;
+  if (a) a.value = 0;
+  document.forms[0].action = "missa.pl";
+  document.forms[0].target = "_self"
+  return;
+}
+
+//restart the programramlet if parameter change
+function parchange() {
+  clearradio();
+  var c = document.forms[0].command.value;
+  if (c && !c.match("pray")) document.forms[0].command.value = "pray" + c;
+  document.forms[0].submit();
+}
+
+//calls kalendar
+function callkalendar() {
+  document.forms[0].action = '../horas/kalendar.pl';
+  document.forms[0].target = "_self"
+  document.forms[0].submit();
+}
+
+//calls officium
+function callofficium() {
+  document.forms[0].action = '../horas/officium.pl';
+  document.forms[0].target = "_self"
+  document.forms[0].submit();
+}
+
+//calls compare
+function callcompare() {
+  document.forms[0].action = "Cmissa.pl";
+  document.forms[0].target = "_self"
+  document.forms[0].submit();
+}
+
+//calls popup
+function callpopup(popup) {
+  document.forms[0].action = 'mpopup.pl';
+  document.forms[0].target = "_new"
+  document.forms[0].popup.value = popup;
+  document.forms[0].submit();
+}
+
+
+function prevnext(ch) {
+  var dat = document.forms[0].date.value;
+  var adat = dat.split('-');
+  var mtab = new Array(31,28,31,30,31,30,31,31,30,31,30,31);
+  var m = eval(adat[0]);
+  var d = eval(adat[1]);
+  var y = eval(adat[2]);
+  var c = eval(ch);
+
+  var leapyear = 0;
+  if ((y % 4) == 0) leapyear = 1;
+  if ((y % 100) == 0) leapyear = 0;
+  if ((y % 400) == 0) leapyear = 1;
+  if (leapyear) mtab[1] = 29;
+  d = d + c;
+  if (d < 1) {
+    m--;
+	if (m < 1) {y--; m = 12;}
+	d = mtab[m-1];
+  }
+  if (d > mtab[m-1]) {
+    m++;
+	  d = 1;
+	  if (m > 12) {y++; m = 1;}
+  }
+  document.forms[0].date.value = m + "-" + d + "-" + y;
+}
+</SCRIPT>
+</HEAD>
+<BODY VLINK=blue LINK=blue BGCOLOR="#eeeeee" onload="startup()";>
+<FORM ACTION="missa.pl" METHOD=post TARGET=_self>
+<P ALIGN=CENTER><FONT COLOR=black>Die Octavæ Nativitatis Domini ~ II. classis<BR></FONT>
+<BR><BR>
+<FONT COLOR=MAROON SIZE=+1><B><I>Sancta Missa</I></B></FONT><P>
+<P ALIGN=CENTER><A HREF=# onclick="callcompare()">Compare</A>
+&nbsp;&nbsp;&nbsp;<A HREF=# onclick="callofficium();">Divinum Officium</A>
+&nbsp;&nbsp;&nbsp;
+<LABEL FOR=date CLASS=offscreen>Date</LABEL>
+<INPUT ID=date TYPE=TEXT NAME=date VALUE="01-01-2023" SIZE=10>
+<A HREF=# onclick="prevnext(-1)">&darr;</A>
+<INPUT TYPE=submit NAME=SUBMIT VALUE=" " onclick="parchange();">
+<A HREF=# onclick="prevnext(1)">&uarr;</A>
+&nbsp;&nbsp;&nbsp;
+<A HREF=# onclick="callkalendar();">Ordo</A>
+&nbsp;&nbsp;&nbsp;
+<A HREF=# onclick="pset('parameters')">Options</A>
+
+</P>
+<TABLE BORDER=1 ALIGN=CENTER CELLPADDING=8 WIDTH=100% class="contrastbg"><TR><TD VALIGN=TOP COLSPAN=2 ALIGN=CENTER>
+<A HREF="mpopup.pl?popup=Ante&rubrics=&lang1=Latin&lang2=Espanol" TARGET=_NEW>Ante</A>
+<FONT SIZE=1>Missam</FONT></TD></TR><TR><TD VALIGN=TOP WIDTH=50% ID=1><DIV ALIGN=right><FONT SIZE=1 COLOR=green><A HREF='#top'>Top</A>&nbsp;&nbsp;<A HREF='#2'>Next</A></FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Introitus</I></B></FONT> 
+<BR>
+<FONT COLOR="red"><I>Isa 9:6</I></FONT><BR>
+<FONT SIZE=+2 COLOR="red"><B><I>P</I></B></FONT>uer natus est nobis, et fílius datus est nobis: cuius impérium super húmerum eius: et vocábitur nomen eius magni consílii Angelus.<BR>
+<FONT COLOR="red"><I>Ps 97:1</I></FONT><BR>
+Cantáte Dómino cánticum novum: quia mirabília fecit.<BR>
+<FONT COLOR="red"><I>V.</I></FONT> Glória Patri, et Fílio, et Spirítui Sancto.<BR>
+<FONT COLOR="red"><I>R.</I></FONT> Sicut erat in princípio, et nunc, et semper, et in sǽcula sæculórum. Amen.<BR>
+<FONT SIZE=+2 COLOR="red"><B><I>P</I></B></FONT>uer natus est nobis, et fílius datus est nobis: cuius impérium super húmerum eius: et vocábitur nomen eius magni consílii Angelus.<BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><DIV ALIGN=right><FONT SIZE=1 COLOR=green>1</FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Introitus</I></B></FONT> 
+<BR>
+<FONT COLOR="red"><I>Isa 9:6</I></FONT><BR>
+<FONT SIZE=+2 COLOR="red"><B><I>A</I></B></FONT> Child is born to us, a Son is given to us; upon His shoulder dominion rests; and His name shall be called the Angel of great counsel. <BR>
+<FONT COLOR="red"><I>Ps 97:1</I></FONT><BR>
+Sing to the Lord a new song, for He has done wondrous deeds. <BR>
+<FONT COLOR="red"><I>V.</I></FONT> Gloria al Padre, al Hijo, y al Espíritu Santo.<BR>
+<FONT COLOR="red"><I>R.</I></FONT> Como era en el principio, ahora y siempre, por los siglos de los siglos. Amén.<BR>
+<FONT SIZE=+2 COLOR="red"><B><I>A</I></B></FONT> Child is born to us, a Son is given to us; upon His shoulder dominion rests; and His name shall be called the Angel of great counsel. <BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP WIDTH=50% ID=2><FONT ><FONT SIZE=+1 COLOR="red"><B><I> Gloria</I></B></FONT> 
+<BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><FONT ><FONT SIZE=+1 COLOR="red"><B><I> Gloria</I></B></FONT> 
+<BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP WIDTH=50% ID=3><DIV ALIGN=right><FONT SIZE=1 COLOR=green><A HREF='#top'>Top</A>&nbsp;&nbsp;<A HREF='#4'>Next</A></FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Oratio</I></B></FONT> 
+<BR>
+<FONT SIZE=+2 COLOR="red"><B><I>O</I></B></FONT>rémus.<BR>
+Deus, qui salútis ætérnæ, beátæ Maríæ virginitáte fecúnda, humáno géneri præmia præstitísti: tríbue, quǽsumus; ut ipsam pro nobis intercédere sentiámus, per quam merúimus auctórem vitæ suscípere, Dóminum nostrum Iesum Christum, Fílium tuum:<BR>
+<FONT SIZE=+1 COLOR="red"><B><I>Q</I></B></FONT>ui tecum vivit et regnat in unitáte Spíritus Sancti Deus per ómnia sǽcula sæculórum.<BR>
+<FONT COLOR="red"><I>R.</I></FONT> Amen.<BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><DIV ALIGN=right><FONT SIZE=1 COLOR=green>3</FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Colecta</I></B></FONT> 
+<BR>
+<FONT SIZE=+2 COLOR="red"><B><I>O</I></B></FONT>remos.<BR>
+O God, You Who by the fruitful virginity of blessed Mary, have bestowed upon mankind the rewards of eternal salvation, grant, we beseech You, that we may enjoy the intercession of her through whom we have been found worthy to receive among us the author of life, our Lord Jesus Christ Your Son. <BR>
+<FONT SIZE=+1 COLOR="red"><B><I>Q</I></B></FONT>ue vive y reina en unión del Espíritu Santo, Dios, por todos los siglos de los siglos.<BR>
+<FONT COLOR="red"><I>R.</I></FONT> Amén.<BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP WIDTH=50% ID=4><DIV ALIGN=right><FONT SIZE=1 COLOR=green><A HREF='#top'>Top</A>&nbsp;&nbsp;<A HREF='#5'>Next</A></FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Lectio</I></B></FONT> 
+<BR>
+Léctio Epístolæ beati Pauli Apóstoli ad Titum<BR>
+<FONT COLOR="red"><I>Tit 2:11-15</I></FONT><BR>
+Caríssime: Appáruit grátia Dei Salvatóris nostri ómnibus homínibus, erúdiens nos, ut, abnegántes impietátem et sæculária desidéria, sóbrie et iuste et pie vivámus in hoc sǽculo, exspectántes beátam spem et advéntum glóriæ magni Dei et Salvatóris nostri Iesu Christi: qui dedit semetípsum pro nobis: ut nos redímeret ab omni iniquitáte, et mundáret sibi pópulum acceptábilem, sectatórem bonórum óperum. Hæc lóquere et exhortáre: in Christo Iesu, Dómino nostro.<BR>
+<FONT COLOR="red"><I>R.</I></FONT> Deo grátias.<BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><DIV ALIGN=right><FONT SIZE=1 COLOR=green>4</FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Lectura</I></B></FONT> 
+<BR>
+Lesson from the letter of St. Paul the Apostle to Titus<BR>
+<FONT COLOR="red"><I>Titus 2:11-15</I></FONT><BR>
+Beloved: The grace of God our Saviour has appeared to all men, instructing us, in order that, rejecting ungodliness and worldly lusts, we may live temperately and justly and piously in this world; looking for the blessed hope and glorious coming of our great God and Saviour, Jesus Christ, Who gave Himself for us that He might redeem us from all iniquity and cleanse for Himself an acceptable people, pursuing good works. Thus speak, and exhort, in Christ Jesus our Lord.<BR>
+<FONT COLOR="red"><I>R.</I></FONT> Demos gracias a Dios.<BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP WIDTH=50% ID=5><DIV ALIGN=right><FONT SIZE=1 COLOR=green><A HREF='#top'>Top</A>&nbsp;&nbsp;<A HREF='#6'>Next</A></FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Graduale</I></B></FONT> 
+<BR>
+<FONT COLOR="red"><I>Ps 97:3; 97:2</I></FONT><BR>
+Vidérunt omnes fines terræ salutare Dei nostri: iubiláte Deo, omnis terra.<BR>
+<FONT COLOR="red"><I>V.</I></FONT> Notum fecit Dominus salutare suum: ante conspéctum géntium revelávit iustitiam suam. Allelúia, allelúia.<BR>
+<FONT COLOR="red"><I>Heb 1:1-2</I></FONT><BR>
+Multifárie olim Deus loquens pátribus in Prophétis, novíssime diébus istis locútus est nobis in Fílio. Allelúia.<BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><DIV ALIGN=right><FONT SIZE=1 COLOR=green>5</FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Gradual</I></B></FONT> 
+<BR>
+<FONT COLOR="red"><I>Ps 97: 3, 4, 2</I></FONT><BR>
+All the ends of the earth have seen the salvation by our God. Sing joyfully to God, all you lands. <BR>
+<FONT COLOR="red"><I>V.</I></FONT> The Lord has made His salvation known: in the sight of the nations He has revealed His justice. Alleluia, alleluia. <BR>
+<FONT COLOR="red"><I>Heb 1:1-2</I></FONT><BR>
+<FONT COLOR="red"><I>V.</I></FONT> God, Who in diverse ways spoke in times past to the fathers by the prophets; last of all, in these days, has spoken to us by His Son. Alleluia.<BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP WIDTH=50% ID=6><DIV ALIGN=right><FONT SIZE=1 COLOR=green><A HREF='#top'>Top</A>&nbsp;&nbsp;<A HREF='#7'>Next</A></FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Evangelium</I></B></FONT> 
+<BR>
+<FONT SIZE=+2 COLOR="red"><B><I>S</I></B></FONT>equéntia <span style='color:red; font-size:1.25em'>+︎</span> sancti Evangélii secúndum Lucam<BR>
+<FONT COLOR="red"><I>R.</I></FONT> Glória tibi, Dómine.<BR>
+<FONT COLOR="red"><I>Luc 2:21</I></FONT><BR>
+In illo témpore: Postquam consummáti sunt dies octo, ut circumciderétur Puer: vocátum est nomen eius Iesus, quod vocátum est ab Angelo, priúsquam in útero conciperétur.<BR>
+<FONT COLOR="red"><I>R.</I></FONT> Laus tibi, Christe.<BR>
+<FONT COLOR="red"><I>S.</I></FONT> Per Evangélica dicta, deleántur nostra delícta.<BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><DIV ALIGN=right><FONT SIZE=1 COLOR=green>6</FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Evangelio</I></B></FONT> 
+<BR>
+<FONT SIZE=+2 COLOR="red"><B><I>C</I></B></FONT>ontinuation <span style='color:red; font-size:1.25em'>+︎</span> of the Holy Gospel according to Luke<BR>
+<FONT COLOR="red"><I>R.</I></FONT> Gloria a Ti, Señor.<BR>
+<FONT COLOR="red"><I>Luke 2:21</I></FONT><BR>
+At that time, when eight days were fulfilled for the circumcision of the Child, His name was called Jesus, the name given Him by the angel before He was conceived in the womb.  <BR>
+<FONT COLOR="red"><I>R.</I></FONT> Alabanza a Ti, oh Cristo.<BR>
+<FONT COLOR="red"><I>S.</I></FONT> By the words of the Gospel may our sins be blotted out.<BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP WIDTH=50% ID=7><FONT ><FONT SIZE=+1 COLOR="red"><B><I>Credo</I></B></FONT> 
+<BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><FONT ><FONT SIZE=+1 COLOR="red"><B><I>Credo&nbsp;</I></B></FONT> 
+<BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP WIDTH=50% ID=8><DIV ALIGN=right><FONT SIZE=1 COLOR=green><A HREF='#top'>Top</A>&nbsp;&nbsp;<A HREF='#9'>Next</A></FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Offertorium</I></B></FONT> 
+<BR>
+<FONT COLOR="red"><I>Ps 88:12; 88:15</I></FONT><BR>
+Tui sunt coeli et tua est terra: orbem terrárum et plenitúdinem eius tu fundásti: iustítia et iudícium præparátio sedis tuæ.<BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><DIV ALIGN=right><FONT SIZE=1 COLOR=green>8</FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Offertorium</I></B></FONT> 
+<BR>
+<FONT COLOR="red"><I>Ps 88:12, 15</I></FONT><BR>
+Yours are the heavens, and Yours is the earth; the world and its fullness You have founded. Justice and judgment are the foundation of Your throne.<BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP WIDTH=50% ID=9><DIV ALIGN=right><FONT SIZE=1 COLOR=green><A HREF='#top'>Top</A>&nbsp;&nbsp;<A HREF='#10'>Next</A></FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Secreta</I></B></FONT> 
+<BR>
+Munéribus nostris, quǽsumus, Dómine, precibúsque suscéptis: et coeléstibus nos munda mystériis, et cleménter exáudi.<BR>
+<FONT SIZE=+1 COLOR="red"><B><I>P</I></B></FONT>er Dóminum nostrum Iesum Christum, Fílium tuum: qui tecum vivit et regnat in unitáte Spíritus Sancti Deus, per ómnia sǽcula sæculórum.<BR>
+<FONT COLOR="red"><I>R.</I></FONT> Amen.<BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><DIV ALIGN=right><FONT SIZE=1 COLOR=green>9</FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Secreta</I></B></FONT> 
+<BR>
+Accept, we beseech You, O Lord, our offerings and prayers; cleanse us by this heavenly rite, and in Your mercy, hear us.  <BR>
+<FONT SIZE=+1 COLOR="red"><B><I>P</I></B></FONT>or nuestro Señor Jesucristo, tu Hijo, que vive y reina contigo en la unidad del Espíritu Santo, Dios, por todos los siglos de los siglos. <BR>
+<FONT COLOR="red"><I>R.</I></FONT> Amén.<BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP WIDTH=50% ID=10><DIV ALIGN=right><FONT SIZE=1 COLOR=green><A HREF='#top'>Top</A>&nbsp;&nbsp;<A HREF='#11'>Next</A></FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Prefatio</I></B></FONT> 
+<BR>
+<FONT COLOR="red"><I>de Nativitate Domini</I></FONT><BR>
+<FONT SIZE=+2 COLOR="red"><B><I>V</I></B></FONT>ere dignum et iustum est, æquum et salutáre, nos tibi semper et ubíque grátias ágere: Dómine sancte, Pater omnípotens, ætérne Deus: Quia per incarnáti Verbi mystérium nova mentis nostræ óculis lux tuæ claritátis infúlsit: ut, dum visibíliter Deum cognóscimus, per hunc in invisibílium amorem rapiámur. Et ídeo cum Angelis et Archángelis, cum Thronis et Dominatiónibus cumque omni milítia cæléstis exércitus hymnum glóriæ tuæ cánimus, sine fine dicéntes.<BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><DIV ALIGN=right><FONT SIZE=1 COLOR=green>10</FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Prefatio</I></B></FONT> 
+<BR>
+<FONT COLOR="red"><I>Navidad</I></FONT><BR>
+<FONT SIZE=+2 COLOR="red"><B><I>V</I></B></FONT>erdaderamente es digno y justo, equitativo y saludable que, en todo tiempo y lugar, os demos gracias, Señor, Padre Santo, Omnipotente Eterno Dios, pues que por el misterio de la Encarnación del Verbo habéis iluminado los ojos de nuestras almas con un nuevo destello de vuestro resplandor, para que, conociendo a Dios visiblemente, seamos atraídos por él al amor de las cosas invisibles. Por tanto, con los Ángeles, Arcángeles, con los Tronos y Dominaciones y con toda la milicia del ejército celestial, cantamos el himno de vuestra gloria diciendo sin cesar:<BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP WIDTH=50% ID=11><DIV ALIGN=right><FONT SIZE=1 COLOR=green><A HREF='#top'>Top</A>&nbsp;&nbsp;<A HREF='#12'>Next</A></FONT></DIV>
+<FONT ><FONT COLOR="red"><I>In Nativitate Domini et per Octavam dicitur: </I></FONT><BR>
+<FONT SIZE=+2 COLOR="red"><B><I>C</I></B></FONT>ommunicántes, et diem sacratíssimum celebrántes, quo beátæ Maríæ intemeráta virgínitas huic mundo édidit Salvatórem: sed et memóriam venerántes, in primis eiúsdem gloriósæ semper Vírginis Maríæ, Genetrícis eiúsdem Dei et Dómini nostri Iesu Christi: sed et beáti Ioseph, eiúsdem Vírginis Sponsi,<BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><DIV ALIGN=right><FONT SIZE=1 COLOR=green>11</FONT></DIV>
+<FONT >Communicating, and keeping this most holy day, on which the spotless virginity of blessed Mary brought forth a Saviour to this world; and also reverencing the memory first of the same glorious Mary, ever Virgin, Mother of the same our God and Lord Jesus Christ: as also of the blessed Joseph, her Spouse,<BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP WIDTH=50% ID=12><FONT ><BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><FONT ><BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP WIDTH=50% ID=13><DIV ALIGN=right><FONT SIZE=1 COLOR=green><A HREF='#top'>Top</A>&nbsp;&nbsp;<A HREF='#14'>Next</A></FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Communio</I></B></FONT> 
+<BR>
+<FONT COLOR="red"><I>Ps 97:3</I></FONT><BR>
+Vidérunt omnes fines terræ salutáre Dei nostri.<BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><DIV ALIGN=right><FONT SIZE=1 COLOR=green>13</FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Communio</I></B></FONT> 
+<BR>
+<FONT COLOR="red"><I>Ps 97:3</I></FONT><BR>
+All the ends of the earth have seen the salvation by our God.<BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP WIDTH=50% ID=14><DIV ALIGN=right><FONT SIZE=1 COLOR=green><A HREF='#top'>Top</A>&nbsp;&nbsp;<A HREF='#15'>Next</A></FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Postcommunio</I></B></FONT> 
+<BR>
+<FONT SIZE=+2 COLOR="red"><B><I>O</I></B></FONT>rémus.<BR>
+Hæc nos commúnio, Dómine, purget a crímine: et, intercedénte beáta Vírgine Dei Genetríce María, cæléstis remédii fáciat esse consórtes.<BR>
+<FONT SIZE=+1 COLOR="red"><B><I>P</I></B></FONT>er eúndem Dóminum nostrum Iesum Christum Fílium tuum, qui tecum vivit et regnat in unitáte Spíritus Sancti, Deus, per ómnia sǽcula sæculórum.<BR>
+<FONT COLOR="red"><I>R.</I></FONT> Amen.<BR>
+</FONT></TD>
+<TD VALIGN=TOP WIDTH=50%><DIV ALIGN=right><FONT SIZE=1 COLOR=green>14</FONT></DIV>
+<FONT ><FONT SIZE=+1 COLOR="red"><B><I>Postcommunio</I></B></FONT> 
+<BR>
+<FONT SIZE=+2 COLOR="red"><B><I>O</I></B></FONT>remos.<BR>
+May this Communion, O Lord, cleanse us from guilt and, by the intercession of the Blessed Virgin Mary, Mother of God, impart to us heavenly healing. <BR>
+<FONT SIZE=+1 COLOR="red"><B><I>P</I></B></FONT>or el mismo Señor Nuestro Jesucristo, tu Hijo, que vive y reina en la unidad del Espíritu Santo, Dios, por todos los siglos de los siglos.<BR>
+<FONT COLOR="red"><I>R.</I></FONT> Amén.<BR>
+</FONT></TD>
+</TR>
+<TR><TD VALIGN=TOP COLSPAN=2 ALIGN=CENTER>
+<A HREF="mpopup.pl?popup=Post&rubrics=&lang1=Latin&lang2=Espanol" TARGET=_NEW>Post</A>
+<FONT SIZE=1>Missam</FONT></TD></TR></TABLE><A ID='14'></A><INPUT TYPE=HIDDEN NAME=expandnum VALUE="">
+<P ALIGN=CENTER><FONT SIZE=+1><I>
+<LABEL FOR=rubrics>Rubrics : </LABEL><INPUT ID=rubrics TYPE=CHECKBOX NAME='rubrics'  Value=1  onclick="parchange()">
+&nbsp;&nbsp;&nbsp;
+<A HREF=# onclick="hset('Sancta Missa Persoluta');"><FONT COLOR=blue>Sancta Missa Persoluta</FONT></A>
+&nbsp;&nbsp;&nbsp;
+<LABEL FOR=solemn>Solemn : </LABEL><INPUT ID=solemn TYPE=CHECKBOX NAME='solemn'  Value=1 onclick="parchange()">
+</I></P>
+<P ALIGN=CENTER>
+&nbsp;&nbsp;&nbsp;<LABEL FOR=version CLASS=offscreen>Version</LABEL>
+<SELECT ID=version NAME=version SIZE=1 onchange="parchange();">
+<OPTION  VALUE="Tridentine 1570">Tridentine 1570
+<OPTION  VALUE="Tridentine 1910">Tridentine 1910
+<OPTION  VALUE="Divino Afflatu">Divino Afflatu
+<OPTION  VALUE="Reduced 1955">Reduced 1955
+<OPTION SELECTED VALUE="Rubrics 1960">Rubrics 1960
+<OPTION  VALUE="1965-1967">1965-1967
+<OPTION  VALUE="1960 Newcalendar">1960 Newcalendar
+<OPTION  VALUE="Dominican">Dominican
+</SELECT>
+&nbsp;&nbsp;&nbsp;<SELECT ID=lang2 NAME=lang2 SIZE=1 onchange="parchange();">
+<OPTION  VALUE="Latin">Latin
+<OPTION  VALUE="Cesky">Čeština
+<OPTION  VALUE="Deutsch">Deutsch
+<OPTION  VALUE="English">English
+<OPTION SELECTED VALUE="Espanol">Español
+<OPTION  VALUE="French">Français
+<OPTION  VALUE="Italiano">Italiano
+<OPTION  VALUE="Magyar">Magyar
+<OPTION  VALUE="Polski">Polski
+<OPTION  VALUE="Portugues">Português
+</SELECT>
+&nbsp;&nbsp;&nbsp;<LABEL FOR=votive CLASS=offscreen>Votive</LABEL>
+<SELECT ID=votive NAME=votive SIZE=1 onchange="parchange();">
+<OPTION SELECTED VALUE="Hodie">Hodie
+<OPTION  VALUE="Coronatio">Coronatio
+<OPTION  VALUE="Dedicatio">Dedicatio
+<OPTION  VALUE="Defunctorum">Defunctorum
+<OPTION  VALUE="Propaganda">Propaganda
+</SELECT>
+</P>
+<P ALIGN=CENTER><FONT SIZE=+1>
+<A HREF=# onclick="hset('Propers')">Full</A>
+</FONT></P>
+<P ALIGN=CENTER><FONT SIZE=+1>
+<A HREF="../../www/horas/Help/versions.html" TARGET="_BLANK">Versions</A>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="../../www/horas/Help/credits.html" TARGET="_BLANK">Credits</A>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="../../www/horas/Help/download.html" TARGET="_BLANK">Download</A>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="../../www/horas/Help/rubrics.html" TARGET="_BLANK">Rubrics</A>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="../../www/horas/Help/technical.html" TARGET="_BLANK">Technical</A>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="../../www/horas/Help/help.html" TARGET="_BLANK">Help</A>
+</FONT>
+</P>
+<INPUT TYPE=HIDDEN NAME=setupm VALUE="general;;;$version='Rubrics 1960';;$testmode='regular';;$lang2='Espanol';;$votive='Hodie';;$rubrics='1';;$solemn='1';;;generalc;;;$version1='Rubrics 1960';;$version2='New Mass';;$lang1='Latin';;$lang2='Latin';;;generalccheck;;;oooo;;;generalcheck;;;oooobb;;;parameters;;;$pope='Franciscus, Francisco';;$bishop='';;$lang1='Latin';;$whitebground='1';;$blackfont='';;$smallblack='-1';;$redfont=' italic red';;$initiale='+2 bold italic red';;$largefont='+1 bold italic red';;$smallfont='1 red';;$titlefont='+1 red';;$screenheight='1024';;$textwidth='100';;;parameterscheck;;;ttobcccccccnn;;;">
+<INPUT TYPE=HIDDEN NAME=command VALUE="Sancta Missa">
+<INPUT TYPE=HIDDEN NAME=searchvalue VALUE="0">
+<INPUT TYPE=HIDDEN NAME=officium VALUE="missa.pl">
+<INPUT TYPE=HIDDEN NAME=browsertime VALUE="8-2-2023">
+<INPUT TYPE=HIDDEN NAME=caller VALUE='0'>
+<INPUT TYPE=HIDDEN NAME=popup VALUE="">
+<INPUT TYPE=HIDDEN NAME=first VALUE="">
+<INPUT TYPE=HIDDEN NAME=Propers VALUE="1">
+<INPUT TYPE=HIDDEN NAME=compare VALUE=0>
+</FORM>
+</BODY></HTML>
